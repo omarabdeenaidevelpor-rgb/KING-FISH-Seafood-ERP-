@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../components"
+		},
+		{
+			"path": "../Default Project"
+		},
+		{
+			"path": "../lib"
+		},
+		{
+			"path": "../public"
+		}
+	]
+}
