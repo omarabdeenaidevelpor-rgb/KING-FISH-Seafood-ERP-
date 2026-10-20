@@ -1122,48 +1122,111 @@ export default function Page() {
                 </div>
               </div>
 
-              <div className="tabs">
-                <button className="tab active">{t.customerList}</button>
-                <button className="tab">{t.orderList}</button>
+              <div className="tabs" style={{ marginBottom: '20px' }}>
+                <button className={`tab ${salesTab === 'customers' ? 'active' : ''}`} onClick={() => setSalesTab('customers')}>
+                  {t.customerList}
+                </button>
+                <button className={`tab ${salesTab === 'orders' ? 'active' : ''}`} onClick={() => setSalesTab('orders')}>
+                  {t.orderList}
+                </button>
               </div>
 
-              {customers.length === 0 ? (
-                <div className="empty-state">
-                  <div className="empty-state-icon"><Users /></div>
-                  <h3>{t.noDataYet}</h3>
-                  <p>{language === 'ar' ? 'ابدأ بإضافة أول عميل' : 'Start by adding your first customer'}</p>
-                </div>
-              ) : (
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>{t.name}</th>
-                      <th>{t.company}</th>
-                      <th>{t.country}</th>
-                      <th>{t.email}</th>
-                      <th>{t.phone}</th>
-                      <th>{t.actions}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {customers.map((customer) => (
-                      <tr key={customer.id}>
-                        <td><strong>{customer.name}</strong></td>
-                        <td>{customer.company}</td>
-                        <td>{customer.country}</td>
-                        <td>{customer.email}</td>
-                        <td>{customer.phone}</td>
-                        <td>
-                          <div className="data-table-actions">
-                            <button className="btn btn-sm btn-danger" onClick={() => deleteCustomer(customer.id)}>
-                              <Trash2 />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              {/* Customers Tab */}
+              {salesTab === 'customers' && (
+                <>
+                  {customers.length === 0 ? (
+                    <div className="empty-state">
+                      <div className="empty-state-icon"><Users /></div>
+                      <h3>{t.noDataYet}</h3>
+                      <p>{language === 'ar' ? 'ابدأ بإضافة أول عميل' : 'Start by adding your first customer'}</p>
+                    </div>
+                  ) : (
+                    <table className="data-table">
+                      <thead>
+                        <tr>
+                          <th>{t.name}</th>
+                          <th>{t.company}</th>
+                          <th>{t.country}</th>
+                          <th>{t.email}</th>
+                          <th>{t.phone}</th>
+                          <th>{t.actions}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {customers.map((customer) => (
+                          <tr key={customer.id}>
+                            <td><strong>{customer.name}</strong></td>
+                            <td>{customer.company}</td>
+                            <td>{customer.country}</td>
+                            <td>{customer.email}</td>
+                            <td>{customer.phone}</td>
+                            <td>
+                              <div className="data-table-actions">
+                                <button className="btn btn-sm btn-danger" onClick={() => deleteCustomer(customer.id)}>
+                                  <Trash2 />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </>
+              )}
+
+              {/* Orders Tab */}
+              {salesTab === 'orders' && (
+                <>
+                  {salesOrders.length === 0 ? (
+                    <div className="empty-state">
+                      <div className="empty-state-icon"><FileText /></div>
+                      <h3>{t.noDataYet}</h3>
+                      <p>{language === 'ar' ? 'ابدأ بإضافة أول طلب' : 'Start by adding your first order'}</p>
+                    </div>
+                  ) : (
+                    <table className="data-table">
+                      <thead>
+                        <tr>
+                          <th>{language === 'ar' ? 'رقم الطلب' : 'Order ID'}</th>
+                          <th>{t.date}</th>
+                          <th>{t.customer}</th>
+                          <th>{t.total}</th>
+                          <th>{t.status}</th>
+                          <th>{t.paymentStatus}</th>
+                          <th>{t.actions}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {salesOrders.map((order) => (
+                          <tr key={order.id}>
+                            <td><strong>{order.id}</strong></td>
+                            <td>{order.date}</td>
+                            <td>{order.customer}</td>
+                            <td>${order.total.toLocaleString()}</td>
+                            <td>
+                              <Badge variant={order.status === 'completed' ? 'success' : order.status === 'cancelled' ? 'danger' : 'info'}>
+                                {order.status}
+                              </Badge>
+                            </td>
+                            <td>
+                              <Badge variant={order.paymentStatus === 'paid' ? 'success' : order.paymentStatus === 'partial' ? 'warning' : 'default'}>
+                                {order.paymentStatus}
+                              </Badge>
+                            </td>
+                            <td>
+                              <div className="data-table-actions">
+                                <button className="btn btn-sm btn-danger" onClick={() => deleteOrder(order.id)}>
+                                  <Trash2 />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </>
               )}
             </section>
           )}
@@ -1183,28 +1246,146 @@ export default function Page() {
                 <input
                   type="text"
                   placeholder={t.searchByLot}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={traceabilityLot}
+                  onChange={(e) => setTraceabilityLot(e.target.value)}
                 />
               </div>
 
-              {searchQuery && productions.filter(p => p.lotNumber.includes(searchQuery)).length > 0 ? (
-                <div style={{ background: '#f8fbfc', border: '1px solid #d8e3ea', borderRadius: '8px', padding: '20px' }}>
-                  <h3 style={{ margin: '0 0 16px', fontSize: '14px' }}>{t.traceabilityReport}</h3>
-                  {productions.filter(p => p.lotNumber.includes(searchQuery)).map(prod => (
-                    <div key={prod.id} style={{ marginBottom: '16px' }}>
-                      <p><strong>{t.lotNumber}:</strong> {prod.lotNumber}</p>
-                      <p><strong>{t.product}:</strong> {prod.product}</p>
-                      <p><strong>{t.date}:</strong> {prod.date}</p>
-                      <p><strong>{t.status}:</strong> <Badge variant={prod.status === 'completed' ? 'success' : 'info'}>{prod.status}</Badge></p>
-                    </div>
-                  ))}
+              {traceabilityLot && productions.filter(p => p.lotNumber.toLowerCase().includes(traceabilityLot.toLowerCase())).length > 0 ? (
+                <div>
+                  {productions.filter(p => p.lotNumber.toLowerCase().includes(traceabilityLot.toLowerCase())).map(prod => {
+                    const relatedReceptions = receptions.filter(r => r.product === prod.rawMaterial)
+                    const relatedQuality = qualityChecks.filter(q => q.lotNumber === prod.lotNumber)
+                    const relatedShipments = shipments.filter(s => s.products.some(p => p.lotNumber === prod.lotNumber))
+                    const relatedInventory = inventory.filter(i => i.lotNumber === prod.lotNumber)
+                    
+                    return (
+                      <div key={prod.id} style={{ background: '#f8fbfc', border: '1px solid #d8e3ea', borderRadius: '12px', padding: '24px', marginBottom: '16px' }}>
+                        <div style={{ marginBottom: '24px' }}>
+                          <h3 style={{ margin: '0 0 8px', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <BarChart3 size={20} />
+                            {t.traceabilityReport}: {prod.lotNumber}
+                          </h3>
+                          <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>{prod.product}</p>
+                        </div>
+
+                        {/* Timeline */}
+                        <div style={{ position: 'relative', paddingLeft: '32px' }}>
+                          {/* Production Info */}
+                          <div style={{ position: 'relative', marginBottom: '24px' }}>
+                            <div style={{ position: 'absolute', left: '-32px', top: '4px', width: '20px', height: '20px', borderRadius: '50%', background: '#2196F3', border: '3px solid white', boxShadow: '0 0 0 2px #2196F3' }} />
+                            <div style={{ position: 'absolute', left: '-22px', top: '24px', width: '2px', height: 'calc(100% + 24px)', background: '#ddd' }} />
+                            <div style={{ background: 'white', border: '1px solid #e0e0e0', borderRadius: '8px', padding: '16px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                <Factory size={16} color="#2196F3" />
+                                <strong>{t.production}</strong>
+                                <Badge variant="info">{prod.status}</Badge>
+                              </div>
+                              <div style={{ fontSize: '13px', color: '#666', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                <div><strong>{t.date}:</strong> {prod.date}</div>
+                                <div><strong>{t.rawMaterial}:</strong> {prod.rawMaterial}</div>
+                                <div><strong>{t.rawWeight}:</strong> {prod.rawWeight} kg</div>
+                                <div><strong>{t.finalWeight}:</strong> {prod.finalWeight} kg</div>
+                                <div><strong>{t.waste}:</strong> {prod.waste} kg</div>
+                                <div><strong>{t.productionLine}:</strong> {prod.productionLine}</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Quality Checks */}
+                          {relatedQuality.length > 0 && (
+                            <div style={{ position: 'relative', marginBottom: '24px' }}>
+                              <div style={{ position: 'absolute', left: '-32px', top: '4px', width: '20px', height: '20px', borderRadius: '50%', background: '#4CAF50', border: '3px solid white', boxShadow: '0 0 0 2px #4CAF50' }} />
+                              {relatedInventory.length > 0 || relatedShipments.length > 0 ? (
+                                <div style={{ position: 'absolute', left: '-22px', top: '24px', width: '2px', height: 'calc(100% + 24px)', background: '#ddd' }} />
+                              ) : null}
+                              <div style={{ background: 'white', border: '1px solid #e0e0e0', borderRadius: '8px', padding: '16px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                  <ClipboardCheck size={16} color="#4CAF50" />
+                                  <strong>{t.quality}</strong>
+                                  <Badge variant={relatedQuality[0].result === 'approved' ? 'success' : 'danger'}>{relatedQuality[0].result}</Badge>
+                                </div>
+                                <div style={{ fontSize: '13px', color: '#666', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                  <div><strong>{t.inspector}:</strong> {relatedQuality[0].inspector}</div>
+                                  <div><strong>{t.date}:</strong> {relatedQuality[0].date}</div>
+                                  <div><strong>{t.appearance}:</strong> {relatedQuality[0].appearance}</div>
+                                  <div><strong>{t.smell}:</strong> {relatedQuality[0].smell}</div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Inventory */}
+                          {relatedInventory.length > 0 && (
+                            <div style={{ position: 'relative', marginBottom: '24px' }}>
+                              <div style={{ position: 'absolute', left: '-32px', top: '4px', width: '20px', height: '20px', borderRadius: '50%', background: '#FF9800', border: '3px solid white', boxShadow: '0 0 0 2px #FF9800' }} />
+                              {relatedShipments.length > 0 ? (
+                                <div style={{ position: 'absolute', left: '-22px', top: '24px', width: '2px', height: 'calc(100% + 24px)', background: '#ddd' }} />
+                              ) : null}
+                              <div style={{ background: 'white', border: '1px solid #e0e0e0', borderRadius: '8px', padding: '16px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                  <Warehouse size={16} color="#FF9800" />
+                                  <strong>{t.warehouse}</strong>
+                                  <Badge variant="warning">{t.currentStock}</Badge>
+                                </div>
+                                <div style={{ fontSize: '13px', color: '#666', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                  <div><strong>{t.quantity}:</strong> {relatedInventory[0].quantity} kg</div>
+                                  <div><strong>{t.location}:</strong> {relatedInventory[0].location}</div>
+                                  <div><strong>{t.room}:</strong> {relatedInventory[0].room}</div>
+                                  <div><strong>{t.temperature}:</strong> {relatedInventory[0].temperature}°C</div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Shipments */}
+                          {relatedShipments.length > 0 && (
+                            <div style={{ position: 'relative' }}>
+                              <div style={{ position: 'absolute', left: '-32px', top: '4px', width: '20px', height: '20px', borderRadius: '50%', background: '#9C27B0', border: '3px solid white', boxShadow: '0 0 0 2px #9C27B0' }} />
+                              <div style={{ background: 'white', border: '1px solid #e0e0e0', borderRadius: '8px', padding: '16px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                  <Ship size={16} color="#9C27B0" />
+                                  <strong>{t.shipping}</strong>
+                                  <Badge variant={relatedShipments[0].status === 'delivered' ? 'success' : 'info'}>{relatedShipments[0].status}</Badge>
+                                </div>
+                                <div style={{ fontSize: '13px', color: '#666', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                  <div><strong>{t.destination}:</strong> {relatedShipments[0].destination}</div>
+                                  <div><strong>{t.customer}:</strong> {relatedShipments[0].customer}</div>
+                                  <div><strong>{t.date}:</strong> {relatedShipments[0].date}</div>
+                                  <div><strong>{t.containerNumber}:</strong> {relatedShipments[0].containerNumber}</div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
               ) : (
                 <div className="empty-state">
                   <div className="empty-state-icon"><BarChart3 /></div>
                   <h3>{language === 'ar' ? 'ابحث برقم اللوط' : 'Search by lot number'}</h3>
                   <p>{language === 'ar' ? 'أدخل رقم اللوط في خانة البحث لعرض سجل التتبع الكامل' : 'Enter a lot number to view full traceability'}</p>
+                  {productions.length > 0 && (
+                    <div style={{ marginTop: '16px' }}>
+                      <p style={{ fontSize: '13px', color: '#666', marginBottom: '8px' }}>
+                        {language === 'ar' ? 'أرقام لوط متوفرة:' : 'Available lot numbers:'}
+                      </p>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center' }}>
+                        {productions.slice(0, 5).map(p => (
+                          <button 
+                            key={p.id} 
+                            className="btn btn-sm" 
+                            onClick={() => setTraceabilityLot(p.lotNumber)}
+                            style={{ fontSize: '12px' }}
+                          >
+                            {p.lotNumber}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </section>
@@ -1572,7 +1753,7 @@ export default function Page() {
             </div>
             <div className="form-group">
               <label>{t.product}</label>
-              <input className="form-input" value={salesOrderForm.productName} onChange={(e) => setSalesOrderForm({ ...salesOrderForm, productName: e.target.value })} required />
+              <input className="form-input" value={salesOrderForm.productName} onChange={(e) => setSalesOrderForm({ ...salesOrderForm, productName: e.target.value })} required />Change={(e) => setSalesOrderForm({ ...salesOrderForm, productName: e.target.value })} required />
             </div>
             <div className="form-group">
               <label>{t.quantity} (kg)</label>

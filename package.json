@@ -1,12 +1,19 @@
 {
-  "name": "my-project",
-  "version": "0.1.0",
+  "name": "king-fish-erp",
+  "version": "1.0.0",
+  "description": "Complete ERP system for seafood processing and export",
+  "author": "Omar Abdeen",
   "private": true,
   "packageManager": "pnpm@12.3.4",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
