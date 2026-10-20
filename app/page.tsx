@@ -1753,7 +1753,7 @@ export default function Page() {
             </div>
             <div className="form-group">
               <label>{t.product}</label>
-              <input className="form-input" value={salesOrderForm.productName} onChange={(e) => setSalesOrderForm({ ...salesOrderForm, productName: e.target.value })} required />Change={(e) => setSalesOrderForm({ ...salesOrderForm, productName: e.target.value })} required />
+              <input className="form-input" value={salesOrderForm.productName} onChange={(e) => setSalesOrderForm({ ...salesOrderForm, productName: e.target.value })} required />
             </div>
             <div className="form-group">
               <label>{t.quantity} (kg)</label>
